@@ -1,0 +1,29 @@
+Architecture
+==================
+
+
+Concepts
+----------------
+
+
+Entity:
+   has name, default None
+   has a pose (position + orientation)
+   have parts, dictionary of key, entity, parts default to {}
+   None is a special key which allow to bypass parts
+   .parts[]  return parts in the local frame
+   [] returns parts or the parts of .parts[None] in the global frame
+   has draw method which returns all parts of parts that are primitives
+   parts can have a style that can be a name or a dictionary of drawings
+   attributes
+
+Primitive:
+   has draw methods which return the transformed self
+   can be drawn by an engine
+
+Engine:
+   can draw primitive on a canvas
+
+Style:
+   dictionary of drawing attributes and styles
+

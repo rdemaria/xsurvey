@@ -1,0 +1,6 @@
+Entities: name, class, container,  pose,  length,  angle, tilt
+
+Tubes: name, radius, length, angle, tilt
+
+Sections: tubename, at, shape
+
