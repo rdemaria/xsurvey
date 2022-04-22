@@ -1,10 +1,8 @@
 Architecture
 ==================
 
-
 Concepts
 ----------------
-
 
 Entity:
    has name, default None

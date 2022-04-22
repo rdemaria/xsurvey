@@ -1,8 +1,10 @@
 from .entity import entity
-from .transformation import Transformation
+from .transformation import Pose
+from .entity import Entity
 
-class Node(Transformation):
-    def __init__(self, beamline, distance=0, from_=None, extratrans=None):
+class Node(Entity):
+    def __init__(self, beamline=None, at=0, from_=None,
+                       name=None, pose=None):
         self.extratrans=extratrans
         self.from_=from_   # (entity, part)
         self.at=at
@@ -22,8 +24,10 @@ class BeamLine(Entity):
         #place t in nodes
 
     def add(self,entity,from_, at, from_=None, extratrans=None):
+        node=Node(from_, at, extratrans)
         self.parts[entity.name]=Node(from_, at, extratrans)
         self.invalidate_trans()
+        return 
 
     def remove(self,name):
         del self.nodes[name]

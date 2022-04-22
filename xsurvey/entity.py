@@ -1,5 +1,6 @@
-from .transformation import Pose
+import copy
 
+from .transformation import Pose
 
 def applystyle(entity, style):
     if entity.name in style:
@@ -26,32 +27,21 @@ class Entity:
         self.__dict__.update(extra)
 
     # should be overwritten by subclasses
-    def copy(self, name=None, pose=None, parts=None, deep=False):
-        if parts is None:
-            parts = self.parts
-        if deep:
-            parts = {k: v.copy(deep=True) for k, v in parts.items()}
-        if name is None:
-            name = self.name
-        if pose is None:
-            pose = self.pose
-        return Entity(name, pose, parts)
+    def copy(self, name=None, pose=None):
+        dct=self.__dict__.copy()
+        if name is not None:
+            dct["name"] = name
+        if pose is not None:
+            dct["pose"] = pose
+        return self.__class__(**dct)
 
-    # should be overwritten by subclasses
-    def render(self):
-        primitives=[]
-        if parts:
-            for k in self.parts:
-                primitives.extend(self[k].render())
-        else:
-            primitives.append(self)
-        return primitives
-
-    def clone(self, name, pose=None):
+    def clone(self, name=None, pose=None, use_clone=False):
         if pose is None:
             pose=Pose()
-        return Clone(self,name=name,pose=pose)
-
+        if use_clone:
+            return Clone(self,name=name,pose=pose)
+        else:
+            return Entity(name=name,parts={None:self})
 
     def move(self, dx=0, dy=0, dz=0):
         self.pose.move(dx=dx, dy=dy,dz=dz)
@@ -79,26 +69,26 @@ class Entity:
 
     def __getattr__(self, key):
         try:
-            return self.parts[key].clone((self.name, key), self.pose)
+            return self[key]
         except KeyError:
             try:
-                return self.parts[None].copy(self.pose)[key]
-            except KeyError:
-                raise AttributeError(f"{key} not found")
+               part=self.parts[None]
+               part=part.copy(name=self.name,pose=self.pose@part.pose)
+               return getattr(part,key)
+            except (KeyError,AttributeError):
+                raise AttributeError(f"`{key}` not found in {self}")
 
     def __getitem__(self, key):
         part=self.parts[key]
-        print(self.pose)
-        print(part.pose)
-        print(self.pose@part.pose)
-        return part.clone(name=(self.name, key), pose=self.pose@part.pose)
+        return part.copy(name=(self.name, key), pose=self.pose@part.pose)
 
-    def render(self, style=defaultstyle):
+    def render(self, pose=None, style=defaultstyle):
         if self.trans is None:
             raise ValueError("Entity {self.name} does not have a position")
         primitives = []
         for part in self.parts:
-            for primi in part.draw(applystyle(part, style)):
+            primitives.extent
+            for primi in part.render(applystyle(part, style)):
                 primitives.append(primi.transform(self.trans))
         return primitives
 
@@ -114,13 +104,15 @@ class Entity:
 
     def __repr__(self):
         cname=self.__class__.__name__
-        args=[repr(self.name)]
+        args=[]
+        if self.name is not None:
+            args.append(repr(self.name))
         if not self.pose.is_identity():
             args.append(repr(self.pose))
-        if self.parts:
-            args.append('parts=...')
-        args=','.join(args)
-        return f"{cname}({args})"
+        #if self.parts:
+        #    args.append('parts=...')
+        args=' '.join(args)
+        return f"<{cname} {args}>"
 
 
 

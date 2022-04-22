@@ -1,5 +1,22 @@
 from .entity import Entity
 
+
+
+
+
+class Cylinder(Entity):
+    def __init__(self,radius=1,length=1,
+            name=None, pose=None, parts=None, **extra):
+        self.radius=radius
+        self.length=length
+        super().__init__(name,pose,parts,**extra)
+
+    def render(self):
+
+
+
+
+
 MT='MOVETO'
 LT='LINETO'
 C3='CURVE3'

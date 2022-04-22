@@ -10,8 +10,10 @@ m.add_part('FlangeR',xs.Cylinder(radius=.5,length=0.2)).move(dz=m.length/2+0.1)
 
 l=xs.BeamLine('PS')
 
-l.add(m.clone('m1'),4).move(dx=0.1)
-l.add(m.clone('m2'),14).move(dx=0.1)
-l.add(m.clone('m3'),18).move(dx=0.1)
+l.add(m.clone('m1').move(dz=0.1), 4)
+l.add(m.clone('m2').move(dz=0.1), 14)
+l.add(m.clone('m3').move(dz=0.1), 24)
 
+canvas=xs.Canvas2d(projection='xz')
+canvas.add(l)
 
